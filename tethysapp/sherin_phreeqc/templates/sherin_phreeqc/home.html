@@ -1,0 +1,43 @@
+{% extends "sherin_phreeqc/base.html" %}
+
+{% load tethys_gizmos %}
+
+{% load staticfiles %}
+
+
+{% block app_navigation_items %}
+
+{% gizmo select_input select_basemap %}
+
+{% gizmo select_input select_site %}
+
+{% gizmo date_picker date_picker %}
+
+{% gizmo button btnSearch %}
+
+{% gizmo button btnPhreeqc %}
+
+{% endblock %}
+
+
+{% block app_content %}
+  <p><strong>Instructions:</strong> Select data of interest or click the map.</p>
+
+{% gizmo map_view map_options %}
+
+
+
+ <p><strong>Note:</strong> This app uses python tools for
+      <a href='http://wwwbrr.cr.usgs.gov/projects/GWC_coupled/phreeqc/' target="_blank">USGS Phreeqc program</a>:
+   <a href='http://www.phreeqpy.com/' target="_blank">PhreeqcPy</a>.
+ </p>
+
+{% endblock %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static 'sherin_phreeqc/js/main.js' %}"></script>
+      <script type="text/javascript"
+             src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDPgvDUpbEwcbg9C0cRTfDtDa-Vj4WBwI0">
+     </script>
+{% endblock %}

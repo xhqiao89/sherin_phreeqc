@@ -1,0 +1,14 @@
+setup.py
+tethysapp/__init__.py
+tethysapp/sherin_phreeqc/__init__.py
+tethysapp/sherin_phreeqc/app.py
+tethysapp/sherin_phreeqc/controllers.py
+tethysapp/sherin_phreeqc/handoff.py
+tethysapp/sherin_phreeqc/init_stores.py
+tethysapp/sherin_phreeqc/model.py
+tethysapp_sherin_phreeqc.egg-info/PKG-INFO
+tethysapp_sherin_phreeqc.egg-info/SOURCES.txt
+tethysapp_sherin_phreeqc.egg-info/dependency_links.txt
+tethysapp_sherin_phreeqc.egg-info/namespace_packages.txt
+tethysapp_sherin_phreeqc.egg-info/not-zip-safe
+tethysapp_sherin_phreeqc.egg-info/top_level.txt
