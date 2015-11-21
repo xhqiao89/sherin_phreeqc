@@ -134,6 +134,96 @@ function run_select_site(){
 
 }
 
+function ymdThms2Date(str)
+{
+    console.log(str);
+    var ymd = str.split("T")[0];
+    var hms = str.split("T")[1];
+    var year = parseInt(ymd.split("-")[0]);
+    var month = parseInt(ymd.split("-")[1])-1;
+    var day = parseInt(ymd.split("-")[2]);
+    var hour = parseInt(hms.split(":")[0]);
+    var minute = parseInt(hms.split(":")[1]);
+    var second = parseInt(hms.split(":")[2]);
+    d=new Date(Date.UTC(year, month, day, hour, minute, second));
+    console.log(d);
+    return d
+}
+
+function createOneSeriesData(y_list, t_list)
+{
+    ty_list = []
+    for (i=0; i<y_list.length; i++)
+        {
+         var y = y_list[i]
+         var t = ymdThms2Date(t_list[i])
+         ty = [t, y]
+         ty_list.push(ty)
+        }
+    return ty_list
+}
+
+
+
+function run_search_results(){
+    var site_dropdown = document.getElementById("select_site");
+    var siteCode = site_dropdown.options[site_dropdown.selectedIndex].value;
+    var beginDate = document.getElementById("begin_date").value;
+    var endDate = document.getElementById("end_date").value;
+
+     $.ajax({
+         type: 'GET',
+         url: 'search-gamut-data',
+         dataType: 'json',
+         data: {
+             'siteCode': siteCode,
+             'beginDate': beginDate,
+             'endDate': endDate
+         },
+         success: function (data) {
+             var a1 = data.a1;
+             var b1 = data.b1;
+             var a2 = data.a2;
+             var b2 = data.b2;
+             var a3 = data.a3;
+             var b3 = data.b3;
+             var a4 = data.a4;
+             var b4 = data.b4;
+
+             $('.highcharts-plot').highcharts().series[0].setData(createOneSeriesData(a1, b1));
+             $('.highcharts-plot').highcharts().series[1].setData(createOneSeriesData(a2, b2));
+             $('.highcharts-plot').highcharts().series[2].setData(createOneSeriesData(a3, b3));
+             $('.highcharts-plot').highcharts().series[3].setData(createOneSeriesData(a4, b4));
+
+
+             //debugger;
+             //$('#search-gamut-data').prop('disabled', false);
+             //if ('error' in data) {
+             //    displayStatus.removeClass('loading');
+             //    displayStatus.addClass('error');
+             //    displayStatus.html('<em>' + data.error + '</em>');
+             //} else {
+             //    displayStatus.removeClass('uploading');
+             //    displayStatus.addClass('success');
+             //
+             //    displayStatus.html('<em>' + data.success + ' View in HydroShare <a href="https://alpha.hydroshare.org/resource/' + data.newResource +
+             //        '" target="_blank">here</a></em>');
+         },
+
+         error: function (jqXHR, textStatus, errorThrown) {
+             alert("Error");
+             //debugger;
+             //$('#search-gamut-data').prop('disabled', false);
+             //console.log(jqXHR + '\n' + textStatus + '\n' + errorThrown);
+             //displayStatus.removeClass('uploading');
+             //displayStatus.addClass('error');
+             //displayStatus.html('<em>' + errorThrown + '</em>');
+         }
+
+     });
+
+    }
+
 function run_phreeqc_analyze(lonlat) {
 
 }

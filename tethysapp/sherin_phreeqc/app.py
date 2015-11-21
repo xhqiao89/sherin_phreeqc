@@ -6,7 +6,7 @@ class Sherin(TethysAppBase):
     Tethys app class for Sherin.
     """
 
-    name = 'Sherin Phreeqc'
+    name = 'Sherin PHREEQC'
     index = 'sherin_phreeqc:home'
     icon = 'sherin_phreeqc/images/index.png'
     package = 'sherin_phreeqc'
@@ -22,6 +22,9 @@ class Sherin(TethysAppBase):
         url_maps = (UrlMap(name='home',
                            url='sherin-phreeqc',
                            controller='sherin_phreeqc.controllers.home'),
+                    UrlMap(name='search_gamut_data',
+                           url='search-gamut-data',
+                           controller='sherin_phreeqc.controllers.search_gamut_data'),
         )
 
         return url_maps

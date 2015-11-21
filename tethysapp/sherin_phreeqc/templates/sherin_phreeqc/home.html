@@ -11,7 +11,9 @@
 
 {% gizmo select_input select_site %}
 
-{% gizmo date_picker date_picker %}
+{% gizmo date_picker begin_date %}
+
+{% gizmo date_picker end_date %}
 
 {% gizmo button btnSearch %}
 
@@ -22,6 +24,8 @@
 
 {% block app_content %}
   <p><strong>Instructions:</strong> Select data of interest or click the map.</p>
+
+{% gizmo plot_view line_plot_view %}
 
 {% gizmo map_view map_options %}
 
@@ -36,7 +40,7 @@
 
 {% block scripts %}
   {{ block.super }}
-  <script src="{% static 'sherin_phreeqc/js/main.js' %}"></script>
+  <script src="{% static 'sherin_phreeqc/js/main.js' %}" type="text/javascript"></script>
       <script type="text/javascript"
              src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDPgvDUpbEwcbg9C0cRTfDtDa-Vj4WBwI0">
      </script>
