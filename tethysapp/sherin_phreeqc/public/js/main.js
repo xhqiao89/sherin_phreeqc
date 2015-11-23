@@ -1,7 +1,7 @@
 var map, sites_layer, click_point_layer;
 var flag_geocoded;
-
 var baseMapLayer=null;
+var chart;
 
 
 $(document).ready(function () {
@@ -34,7 +34,7 @@ $(document).ready(function () {
     			//projection: ol.proj.get('EPSG:4326'),
                 format:new ol.format.KML(),
     			//normally this kml file would be sitting on your server
-    			url: '/static/sherin_phreeqc/kml/iUTAH_sites.kml'
+    			url: '/static/sherin_phreeqc/kml/Sites.kml'
 
   			})
 		});
@@ -68,12 +68,11 @@ $(document).ready(function () {
     var lat = 41.30108;
     var lon = -111.29661;
     CenterMap(lat, lon);
-    map.getView().setZoom(8);
+    map.getView().setZoom(7);
 
     map.on('click', function(evt) {
         flag_geocoded=false;
         var coordinate = evt.coordinate;
-        addClickPoint(coordinate);
 
         var lonlat = ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326');
 
@@ -81,6 +80,52 @@ $(document).ready(function () {
         //indexing service to show them the closest NHD reach segment.
         run_phreeqc_analyze(lonlat);
     })
+
+    var chart_options = {
+	chart: {
+		renderTo: 'iutah-chart',
+		zoomType: 'x',
+	},
+        loading: {
+            labelStyle: {
+                top: '45%',
+		        left: '50%',
+                display: 'block',
+                width: '134px',
+                height: '100px',
+                backgroundColor: '#000'
+            }
+        },
+	title: {
+		text: 'iUTAH GAMUT DATA'
+	},
+    xAxis: {
+		type: 'datetime',
+		//minRange: 14 * 24 * 3600000
+		},
+	yAxis: {
+		title: {
+			text: 'Value'
+		},
+		},
+	legend: {
+		enabled: true
+	},
+	series: [{},{},{},{},{}]
+};
+
+    chart_options.series[0].type = 'line';
+    chart_options.series[0].name = 'pH';
+    chart_options.series[1].type = 'line';
+    chart_options.series[1].name = 'Temperature';
+    chart_options.series[2].type = 'line';
+    chart_options.series[2].name = 'DO';
+    chart_options.series[3].type = 'line';
+    chart_options.series[3].name = 'Nitrate-N';
+    chart_options.series[4].type = 'line';
+    chart_options.series[4].name = 'Daily average pH';
+
+    chart = new Highcharts.Chart(chart_options);
 
 });
 
@@ -105,21 +150,6 @@ function run_select_basemap() {
     baseMapLayer=new_baseMapLayer
 }
 
-function addClickPoint(coordinates){
-    // Check if the feature exists. If not then create it.
-    // If it does exist, then just change its geometry to the new coords.
-    var geometry = new ol.geom.Point(coordinates);
-    if (click_point_layer.getSource().getFeatures().length==0){
-        var feature = new ol.Feature({
-            geometry: geometry,
-            attr: 'Some Property'
-        });
-        click_point_layer.getSource().addFeature(feature);
-    } else {
-        click_point_layer.getSource().getFeatures()[0].setGeometry(geometry);
-    }
-}
-
 function CenterMap(lat, lon){
     var dbPoint = {
         "type": "Point",
@@ -130,13 +160,23 @@ function CenterMap(lat, lon){
 }
 
 function run_select_site(){
-  dropdown_obj = document.getElementById("select_site");
+    var site_dropdown = document.getElementById("select_site");
+    var ID = site_dropdown.options[site_dropdown.selectedIndex].value;
+    myFeature = sites_layer.getSource().getFeatures();
+
+    var feature;
+    for(i=0; i<myFeature.length;i++){
+        feature = myFeature[i];
+        if(feature.q.name == ID){
+           myCoords = feature.getGeometry().getCoordinates();
+           map.getView().setCenter(myCoords);
+           map.getView().setZoom(15);
+        }
+    }
 
 }
 
-function ymdThms2Date(str)
-{
-    console.log(str);
+function ymdThms2Date(str){
     var ymd = str.split("T")[0];
     var hms = str.split("T")[1];
     var year = parseInt(ymd.split("-")[0]);
@@ -145,13 +185,11 @@ function ymdThms2Date(str)
     var hour = parseInt(hms.split(":")[0]);
     var minute = parseInt(hms.split(":")[1]);
     var second = parseInt(hms.split(":")[2]);
-    d=new Date(Date.UTC(year, month, day, hour, minute, second));
-    console.log(d);
+    d = Date.UTC(year, month, day, hour, minute, second);
     return d
 }
 
-function createOneSeriesData(y_list, t_list)
-{
+function createOneSeriesData(y_list, t_list){
     ty_list = []
     for (i=0; i<y_list.length; i++)
         {
@@ -162,8 +200,6 @@ function createOneSeriesData(y_list, t_list)
         }
     return ty_list
 }
-
-
 
 function run_search_results(){
     var site_dropdown = document.getElementById("select_site");
@@ -189,39 +225,21 @@ function run_search_results(){
              var b3 = data.b3;
              var a4 = data.a4;
              var b4 = data.b4;
+             var a5 = data.a5;
+             var b5 = data.b5;
 
-             $('.highcharts-plot').highcharts().series[0].setData(createOneSeriesData(a1, b1));
-             $('.highcharts-plot').highcharts().series[1].setData(createOneSeriesData(a2, b2));
-             $('.highcharts-plot').highcharts().series[2].setData(createOneSeriesData(a3, b3));
-             $('.highcharts-plot').highcharts().series[3].setData(createOneSeriesData(a4, b4));
+             chart.series[0].setData(createOneSeriesData(a1, b1));
+             chart.series[1].setData(createOneSeriesData(a2, b2));
+             chart.series[2].setData(createOneSeriesData(a3, b3));
+             chart.series[3].setData(createOneSeriesData(a4, b4));
+             chart.series[4].setData(createOneSeriesData(a5, b5));
 
-
-             //debugger;
-             //$('#search-gamut-data').prop('disabled', false);
-             //if ('error' in data) {
-             //    displayStatus.removeClass('loading');
-             //    displayStatus.addClass('error');
-             //    displayStatus.html('<em>' + data.error + '</em>');
-             //} else {
-             //    displayStatus.removeClass('uploading');
-             //    displayStatus.addClass('success');
-             //
-             //    displayStatus.html('<em>' + data.success + ' View in HydroShare <a href="https://alpha.hydroshare.org/resource/' + data.newResource +
-             //        '" target="_blank">here</a></em>');
          },
 
          error: function (jqXHR, textStatus, errorThrown) {
              alert("Error");
-             //debugger;
-             //$('#search-gamut-data').prop('disabled', false);
-             //console.log(jqXHR + '\n' + textStatus + '\n' + errorThrown);
-             //displayStatus.removeClass('uploading');
-             //displayStatus.addClass('error');
-             //displayStatus.html('<em>' + errorThrown + '</em>');
          }
-
      });
-
     }
 
 function run_phreeqc_analyze(lonlat) {

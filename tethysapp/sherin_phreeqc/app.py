@@ -11,7 +11,7 @@ class Sherin(TethysAppBase):
     icon = 'sherin_phreeqc/images/index.png'
     package = 'sherin_phreeqc'
     root_url = 'sherin-phreeqc'
-    color = '#34495e'
+    color = '#008B8B'
         
     def url_maps(self):
         """

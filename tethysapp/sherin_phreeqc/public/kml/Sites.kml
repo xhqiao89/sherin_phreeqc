@@ -88,7 +88,7 @@
       </Point>
     </Placemark>
     <Placemark id="ID_00001">
-      <name>LR_TG_BA</name>
+      <name>LR_MainStreet_BA</name>
       <Snippet></Snippet>
       <description><![CDATA[<html xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:msxsl="urn:schemas-microsoft-com:xslt">
 
@@ -106,7 +106,7 @@
 
 <tr style="text-align:center;font-weight:bold;background:#9CBCE2">
 
-<td>LR_TG_BA</td>
+<td>LR_MainStreet_BA</td>
 
 </tr>
 
@@ -128,7 +128,7 @@
 
 <td>Site</td>
 
-<td>LR_TG_BA</td>
+<td>LR_MainStreet_BA</td>
 
 </tr>
 
