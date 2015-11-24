@@ -1,17 +1,15 @@
 import sys
-import shutil
-import traceback
-import matplotlib.pyplot as plt
 import csv
 from suds.client import Client
 from pandas import Series
 import logging
 logging.getLogger('suds.client').setLevel(logging.CRITICAL)
 sys.path.append('/usr/local/lib/python2.7/dist-packages')
+
 from django.shortcuts import render
 from django.http import JsonResponse
 from tethys_gizmos.gizmo_options import MapView, MVView
-from tethys_sdk.gizmos import Button, SelectInput, DatePicker, LinePlot
+from tethys_sdk.gizmos import Button, SelectInput, DatePicker, LinePlot, TextInput
 
 
 
@@ -75,6 +73,11 @@ def home(request):
                         attributes="id=btnSearch onclick=run_search_results();",
                         submit=False)
 
+    xValue = TextInput(display_text='Input X value:',
+                    name="xValue",
+                    initial="",
+                    disabled=False)
+
     btnPhreeqc = Button(display_text="Run Phreeqc",
                         name="btnPhreeqc",
                         attributes="id=btnPhreeqc onclick=run_phreeqc_analyze();",
@@ -87,6 +90,7 @@ def home(request):
                'btnSearch': btnSearch,
                'begin_date': begin_date,
                'end_date': end_date,
+               'xValue': xValue,
                'btnPhreeqc':btnPhreeqc,
                }
     return render(request, 'sherin_phreeqc/home.html', context)

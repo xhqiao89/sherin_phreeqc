@@ -1,5 +1,4 @@
 var map, sites_layer, click_point_layer;
-var flag_geocoded;
 var baseMapLayer=null;
 var chart;
 
@@ -70,16 +69,15 @@ $(document).ready(function () {
     CenterMap(lat, lon);
     map.getView().setZoom(7);
 
-    map.on('click', function(evt) {
-        flag_geocoded=false;
-        var coordinate = evt.coordinate;
-
-        var lonlat = ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326');
-
-        //Each time the user clicks on the map, let's run the point
-        //indexing service to show them the closest NHD reach segment.
-        run_phreeqc_analyze(lonlat);
-    })
+    //map.on('click', function(evt) {
+    //    var coordinate = evt.coordinate;
+    //
+    //    var lonlat = ol.proj.transform(coordinate, 'EPSG:3857', 'EPSG:4326');
+    //
+    //    //Each time the user clicks on the map, let's run the point
+    //    //indexing service to show them the closest NHD reach segment.
+    //    run_phreeqc_analyze(lonlat);
+    //})
 
     var chart_options = {
 	chart: {
@@ -201,11 +199,27 @@ function createOneSeriesData(y_list, t_list){
     return ty_list
 }
 
+
+function average_values(elmt){
+    var sum = 0;
+    for( var i = 0; i < elmt.length; i++ ){
+    sum += parseFloat(elmt[i]); //don't forget to add the base
+}
+    var avg = sum/(elmt.length*1.0);
+    return avg;
+
+}
+var pH_ave;
+var Temp_ave;
+var DO_ave;
+var N_ave;
+
 function run_search_results(){
     var site_dropdown = document.getElementById("select_site");
     var siteCode = site_dropdown.options[site_dropdown.selectedIndex].value;
     var beginDate = document.getElementById("begin_date").value;
     var endDate = document.getElementById("end_date").value;
+    waiting_pis();
 
      $.ajax({
          type: 'GET',
@@ -217,6 +231,8 @@ function run_search_results(){
              'endDate': endDate
          },
          success: function (data) {
+             alert("Succeed!");
+             document.getElementById("result_loading").innerHTML = '';
              var a1 = data.a1;
              var b1 = data.b1;
              var a2 = data.a2;
@@ -234,6 +250,13 @@ function run_search_results(){
              chart.series[3].setData(createOneSeriesData(a4, b4));
              chart.series[4].setData(createOneSeriesData(a5, b5));
 
+             pH_ave = average_values(a1);
+             Temp_ave = average_values(a2);
+             DO_ave = average_values(a3);
+             N_ave = average_values(a4);
+
+             //alert(pH_ave);
+
          },
 
          error: function (jqXHR, textStatus, errorThrown) {
@@ -243,5 +266,18 @@ function run_search_results(){
     }
 
 function run_phreeqc_analyze(lonlat) {
+    //alert(pH_ave);
+    //alert(Temp_ave);
+    //alert(DO_ave);
+    //alert(N_ave);
+    var input_data = document.getElementById("xValue").value;
+    alert(input_data);
 
+
+}
+
+function waiting_pis() {
+     var wait_text = "<strong>Loading...</strong><br>" +
+        "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src='/static/sherin_phreeqc/images/earth_globe.gif'>";
+    document.getElementById('result_loading').innerHTML = wait_text;
 }
