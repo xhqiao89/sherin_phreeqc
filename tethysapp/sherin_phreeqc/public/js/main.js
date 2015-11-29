@@ -209,6 +209,7 @@ function average_values(elmt){
     return avg;
 
 }
+
 var pH_ave;
 var Temp_ave;
 var DO_ave;
@@ -231,7 +232,6 @@ function run_search_results(){
              'endDate': endDate
          },
          success: function (data) {
-             alert("Succeed!");
              document.getElementById("result_loading").innerHTML = '';
              var a1 = data.a1;
              var b1 = data.b1;
@@ -266,13 +266,28 @@ function run_search_results(){
     }
 
 function run_phreeqc_analyze(lonlat) {
-    //alert(pH_ave);
-    //alert(Temp_ave);
-    //alert(DO_ave);
-    //alert(N_ave);
     var input_data = document.getElementById("xValue").value;
-    alert(input_data);
+        $.ajax({
+         type: 'GET',
+         url: 'run-phreeqc',
+         dataType: 'json',
+         data: {
+             'temp': Temp_ave,
+             'pH': pH_ave,
+             'DO': DO_ave,
+             'N': N_ave,
+             'Ca': input_data
+         },
+         success: function (data) {
+             alert("H+(Molality) :"+ data["m_H"].toPrecision(3) +"\nOH-(Molality) :"+ data["m_OH"].toPrecision(3)+"\nCa(Molality) :"+ data["m_Ca"].toPrecision(3)
+                 +"\nCaOH+(Molality) :"+ data["m_CaOH"].toPrecision(3)+"\nCa+2(Molality) :"+ data["m_Ca2"].toPrecision(3)
+                    );
+                      },
 
+         error: function (jqXHR, textStatus, errorThrown) {
+             alert("Error");
+         }
+     });
 
 }
 

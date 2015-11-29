@@ -4,7 +4,6 @@
 
 {% load staticfiles %}
 
-
 {% block app_navigation_items %}
 
 {% gizmo select_input select_basemap %}
@@ -29,14 +28,11 @@
 {% block app_content %}
   <p><strong>Instructions:</strong> Select data of interest or click the map.</p>
 
-
-
   <div class="col-md-4">
    {% gizmo map_view map_options %}
   </div>
 
  <div class="col-md-8" id="iutah-chart"></div>
-
 
  <p><strong>Note:</strong> This app uses python tools for
       <a href='http://wwwbrr.cr.usgs.gov/projects/GWC_coupled/phreeqc/' target="_blank">USGS Phreeqc program</a>:

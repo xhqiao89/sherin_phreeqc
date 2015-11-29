@@ -25,6 +25,9 @@ class Sherin(TethysAppBase):
                     UrlMap(name='search_gamut_data',
                            url='search-gamut-data',
                            controller='sherin_phreeqc.controllers.search_gamut_data'),
+                    UrlMap(name='run_phreeqc',
+                           url='run-phreeqc',
+                           controller='sherin_phreeqc.controllers.run_phreeqc')
         )
 
         return url_maps

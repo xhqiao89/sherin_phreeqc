@@ -1,3 +1,4 @@
+import os
 import sys
 import csv
 from suds.client import Client
@@ -11,6 +12,14 @@ from django.http import JsonResponse
 from tethys_gizmos.gizmo_options import MapView, MVView
 from tethys_sdk.gizmos import Button, SelectInput, DatePicker, LinePlot, TextInput
 
+MODE = 'dll'  # 'dll' or 'com'
+
+if MODE == 'com':
+    import phreeqpy.iphreeqc.phreeqc_com as phreeqc_mod
+elif MODE == 'dll':
+    import phreeqpy.iphreeqc.phreeqc_dll as phreeqc_mod
+else:
+    raise Exception('Mode "%s" is not defined use "com" or "dll".' % MODE)
 
 
 def home(request):
@@ -73,7 +82,7 @@ def home(request):
                         attributes="id=btnSearch onclick=run_search_results();",
                         submit=False)
 
-    xValue = TextInput(display_text='Input X value:',
+    xValue = TextInput(display_text='Input Ca Concentration (ppm):',
                     name="xValue",
                     initial="",
                     disabled=False)
@@ -97,7 +106,6 @@ def home(request):
 
 
 def search_gamut_data(request):
-    temp_dir = None
 
     if request.method == 'GET':
         get_data = request.GET
@@ -177,9 +185,6 @@ def search_gamut_data(request):
         for line in your_list:
             b5.append(line[0]+"T00:00:00")
             a5.append(float(line[1]))
-        print a5
-        print b5
-
 
     return JsonResponse({'success': "123",
                          'a1': a1,
@@ -193,3 +198,105 @@ def search_gamut_data(request):
                          'a5': a5,
                          'b5': b5,
                          })
+
+def run_phreeqc(request):
+    if request.method == 'GET':
+        get_data = request.GET
+
+        temp = str(get_data['temp'])
+        pH = str(get_data['pH'])
+        DO = str(get_data['DO'])
+        N = str(get_data['N'])
+        Ca = str(get_data['Ca'])
+
+        rslt = phreeqc_func(temp, pH, DO, N, Ca)
+        m_H2O = rslt["m_H2O(mol/kgw)"]
+        m_CaOH = rslt["m_CaOH+(mol/kgw)"]
+        m_Ca = rslt["Ca"]
+        m_Ca2 = rslt["m_Ca+2(mol/kgw)"]
+        m_H = rslt["m_H+(mol/kgw)"]
+        m_OH = rslt["m_OH-(mol/kgw)"]
+
+        return JsonResponse({'success': "123",
+                            'm_H2O': m_H2O[0],
+                             'm_CaOH': m_CaOH[0],
+                             'm_Ca': m_Ca[0],
+                             'm_Ca2': m_Ca2[0],
+                             'm_H': m_H[0],
+                             'm_OH': m_OH[0]})
+
+def make_initial_conditions(temp,pH,DO,N,Ca):
+    """
+    Specify initial conditions data blocks.
+
+    Uniform initial conditions are assumed.
+    """
+    initial_conditions = """
+    SOLUTION 1
+        units            ppm
+        temp             %s
+        pH               %s
+        pe               7
+        O(0)             %s
+        N(5)             %s
+        Ca               %s
+    END
+        """ % (temp, pH, DO, N, Ca)
+    return initial_conditions
+
+def make_selected_output(components):
+    """
+    Build SELECTED_OUTPUT data block
+    """
+    headings = "-headings  cb    H    O    "
+    for i in range(len(components)):
+        headings += components[i] + "\t"
+    selected_output = """
+    SELECTED_OUTPUT
+        -reset false
+        -molalities Ca+2 CaOH+ H+ OH- H2O
+    USER_PUNCH
+    """
+    selected_output += headings + "\n"
+    #
+    # charge balance, H, and O
+    #
+    code = '10 w = TOT("water")\n'
+    code += '20 PUNCH CHARGE_BALANCE, TOTMOLE("H"), TOTMOLE("O")\n'
+    #
+    # All other elements
+    #
+    lino = 30
+    for component in components:
+        code += '%d PUNCH w*TOT(\"%s\")\n' % (lino, component)
+        lino += 10
+    selected_output += code
+    return selected_output
+
+def get_selected_output(phreeqc):
+
+    output = phreeqc.get_selected_output_array()
+    header = output[0]
+    conc = {}
+    for head in header:
+        conc[head] = []
+    for row in output[1:]:
+        for col, head in enumerate(header):
+            conc[head].append(row[col])
+    return conc
+
+def phreeqc_func(temp, pH, DO, N, Ca):
+    phreeqc = phreeqc_mod.IPhreeqc()
+    module_dir = os.path.dirname(__file__)  # get current directory
+    phreeqc.load_database(module_dir + "/phreeqc.dat")
+    initial_conditions = make_initial_conditions(temp, pH, DO, N, Ca)
+    phreeqc.run_string(initial_conditions)
+    components = phreeqc.get_component_list();
+    selected_output = make_selected_output(components)
+    phreeqc.run_string(selected_output)
+    phc_string = "RUN_CELLS; -cells 0-1\n"
+    phreeqc.run_string(phc_string)
+    output = phreeqc.get_selected_output_array()
+    conc = get_selected_output(phreeqc)
+    return conc
+
