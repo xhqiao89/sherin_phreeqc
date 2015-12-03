@@ -75,7 +75,7 @@ def home(request):
                          start_date='2010-01-01',
                          start_view='decade',
                          today_button=True,
-                         initial='2015-03-11')
+                         initial='2015-03-04')
 
     btnSearch = Button(display_text="Search",
                         name="btnSearch",
@@ -87,7 +87,7 @@ def home(request):
                     initial="",
                     disabled=False)
 
-    btnPhreeqc = Button(display_text="Run Phreeqc",
+    btnPhreeqc = Button(display_text="Run PHREEQC",
                         name="btnPhreeqc",
                         attributes="id=btnPhreeqc onclick=run_phreeqc_analyze();",
                         submit=False)

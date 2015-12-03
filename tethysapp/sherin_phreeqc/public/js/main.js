@@ -255,8 +255,6 @@ function run_search_results(){
              DO_ave = average_values(a3);
              N_ave = average_values(a4);
 
-             //alert(pH_ave);
-
          },
 
          error: function (jqXHR, textStatus, errorThrown) {
@@ -279,9 +277,21 @@ function run_phreeqc_analyze(lonlat) {
              'Ca': input_data
          },
          success: function (data) {
-             alert("H+(Molality) :"+ data["m_H"].toPrecision(3) +"\nOH-(Molality) :"+ data["m_OH"].toPrecision(3)+"\nCa(Molality) :"+ data["m_Ca"].toPrecision(3)
-                 +"\nCaOH+(Molality) :"+ data["m_CaOH"].toPrecision(3)+"\nCa+2(Molality) :"+ data["m_Ca2"].toPrecision(3)
-                    );
+
+             alert("Finished!")
+
+             var m_H = data["m_H"].toPrecision(4);
+             var m_OH= data["m_OH"].toPrecision(4);
+             var m_Ca = data["m_Ca"].toExponential(3);
+             var m_CaOH = data["m_CaOH"].toPrecision(4);
+             var m_Ca2 = data["m_Ca2"].toExponential(3);
+
+             $('#m_H').val(m_H);
+             $('#m_OH').val(m_OH);
+             $('#m_Ca').val(m_Ca);
+             $('#m_CaOH').val(m_CaOH);
+             $('#m_Ca2').val(m_Ca2);
+
                       },
 
          error: function (jqXHR, textStatus, errorThrown) {

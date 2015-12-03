@@ -20,19 +20,27 @@
 
 {% gizmo button btnPhreeqc %}
 
+<a name="rslt_phreeqc" class="btn btn-default" id="rslt_phreeqc" data-toggle="modal" data-target="#phreeqc-modal" role="button">
+            <span class="glyphicon hydroshare" aria-hidden="true"></span>Show PHREEQC Results
+        </a>
+
 <div id="result_loading"></div>
 
 {% endblock %}
 
 
 {% block app_content %}
-  <p><strong>Instructions:</strong> Select data of interest or click the map.</p>
+  <p><strong>Instructions:</strong> Select data of interest, click 'Search' buton to get the results. Input Ca concentration, click
+      'Run Phreeqc' button to get the Phreeqc analysis results.
+</p>
 
   <div class="col-md-4">
    {% gizmo map_view map_options %}
   </div>
 
  <div class="col-md-8" id="iutah-chart"></div>
+
+<br>
 
  <p><strong>Note:</strong> This app uses python tools for
       <a href='http://wwwbrr.cr.usgs.gov/projects/GWC_coupled/phreeqc/' target="_blank">USGS Phreeqc program</a>:
@@ -42,6 +50,45 @@
 {% endblock %}
 
 {% block scripts %}
+<div class="modal fade" id="phreeqc-modal" tabindex="-1" role="dialog" aria-labelledby="AddHydroshareResource">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h6 class="modal-title">PHREEQC Analysis Results:</h6>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="m_H" class="control-label">H+ Concentration(Molality):</label>
+                    <input type="text" class="form-control" id="m_H">
+                </div>
+                <div class="form-group">
+                    <label for="m_OH" class="control-label">OH- Concentration(Molality):</label>
+                    <input type="text" class="form-control" id="m_OH">
+                </div>
+                <div class="form-group">
+                    <label for="m_Ca" class="control-label">TotalCa Concentration(Molality):</label>
+                    <input type="text" class="form-control" id="m_Ca">
+                </div>
+                <div class="form-group">
+                    <label for="m_CaOH" class="control-label">CaOH+ Concentration(Molality):</label>
+                    <input type="text" class="form-control" id="m_CaOH">
+                </div>
+                <div class="form-group">
+                    <label for="m_Ca2" class="control-label">Ca+2 Concentration(Molality):</label>
+                    <input type="text" class="form-control" id="m_Ca2">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div id="display-status" class="col-md-8"></div>
+                <div id="footer-buttons" class="col-md-4">
+                    <button type="button" class="btn btn-default footer" data-dismiss="modal" onclick="clearUploadForm()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="{% static 'sherin_phreeqc/vendor/highcharts/highcharts.js' %}" type="text/javascript"></script>
 <script src="{% static 'ssherin_phreeqc/vendor/highcharts/exporting.js' %}" type="text/javascript"></script>
 <script src="{% static 'sherin_phreeqc/vendor/highcharts/export-csv.js' %}" type="text/javascript"></script>
