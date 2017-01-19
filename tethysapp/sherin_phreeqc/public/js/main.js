@@ -157,13 +157,13 @@ function CenterMap(lat, lon){
     map.getView().setCenter(coords);
 }
 
-function run_select_site(){
+function run_select_site() {
     var site_dropdown = document.getElementById("select_site");
     var ID = site_dropdown.options[site_dropdown.selectedIndex].value;
     myFeature = sites_layer.getSource().getFeatures();
 
     var feature;
-    for(i=0; i<myFeature.length;i++){
+    for (i = 0; i < myFeature.length; i++) {
         feature = myFeature[i];
         if(feature.values_.name == ID or feature.q.name == ID){
            myCoords = feature.getGeometry().getCoordinates();
@@ -173,6 +173,7 @@ function run_select_site(){
     }
 
 }
+
 
 function ymdThms2Date(str){
     var ymd = str.split("T")[0];
