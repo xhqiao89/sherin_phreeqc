@@ -165,7 +165,7 @@ function run_select_site() {
     var feature;
     for (i = 0; i < myFeature.length; i++) {
         feature = myFeature[i];
-        if(feature.values_.name == ID or feature.q.name == ID){
+        if(feature.values_.name == ID || feature.q.name == ID){
            myCoords = feature.getGeometry().getCoordinates();
            map.getView().setCenter(myCoords);
            map.getView().setZoom(15);
